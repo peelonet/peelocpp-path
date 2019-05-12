@@ -80,14 +80,21 @@ namespace peelo
     parse(source, m_full_path, m_root, m_parts);
   }
 
-  path&
-  path::operator=(const path& that)
+  void
+  path::assign(const path& that)
   {
     m_full_path = that.m_full_path;
     m_root = that.m_root;
     m_parts = that.m_parts;
+  }
 
-    return *this;
+  void
+  path::assign(const std::u32string& source)
+  {
+    m_full_path.clear();
+    m_root.clear();
+    m_parts.clear();
+    parse(source, m_full_path, m_root, m_parts);
   }
 
   bool

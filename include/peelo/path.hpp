@@ -70,7 +70,38 @@ namespace peelo
      *
      * \param that Other path to copy contents of.
      */
-    path& operator=(const path& that);
+    inline path& operator=(const path& that)
+    {
+      assign(that);
+
+      return *this;
+    }
+
+    /**
+     * Replaces contents of the path with a path parsed from given string.
+     *
+     * \param source String to parse the new path from.
+     */
+    inline path& operator=(const std::u32string& source)
+    {
+      assign(source);
+
+      return *this;
+    }
+
+    /**
+     * Copies contents of another path into this one.
+     *
+     * \param that Other path to copy contents of.
+     */
+    void assign(const path& that);
+
+    /**
+     * Replaces contents of the path with a path parsed from given string.
+     *
+     * \param source String to parse the new path from.
+     */
+    void assign(const std::u32string& source);
 
     /**
      * Tests whether the path is empty.
