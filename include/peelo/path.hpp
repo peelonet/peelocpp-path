@@ -26,6 +26,9 @@
 #ifndef PEELO_PATH_HPP_GUARD
 #define PEELO_PATH_HPP_GUARD
 
+#include <peelo/chrono/datetime.hpp>
+
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -157,6 +160,18 @@ namespace peelo
      * block device.
      */
     bool is_block_device() const;
+
+    /**
+     * Returns the date and time when the file was last accessed, or nothing if
+     * the file does not exist or such information isn't available.
+     */
+    std::optional<datetime> last_access() const;
+
+    /**
+     * Returns the date and time when the file was last modified, or nothing if
+     * the file does not exist.
+     */
+    std::optional<datetime> last_modified() const;
 
     /**
      * Tests whether two paths are equal.

@@ -209,6 +209,72 @@ namespace peelo
     return false;
   }
 
+  std::optional<datetime>
+  path::last_access() const
+  {
+#if defined(_WIN32)
+    WIN32_FILE_ATTRIBUTE_DATA data = {0};
+
+    if (::GetFileAttributesExW(widen(m_full_path).c_str(),
+                               GetFileExInfoStandard,
+                               &data))
+    {
+      SYSTEMTIME st;
+
+      ::FileTimeToSystemTime(&data.ftLastAccessTime, &st);
+
+      return std::make_optional<datetime>(
+        st.wYear,
+        static_cast<month>(st.wMonth - 1),
+        st.wDay,
+        st.wHour,
+        st.wMinute,
+        st.wSecond
+      );
+    }
+#else
+    if (stat())
+    {
+      return std::optional<datetime>(datetime::timestamp(m_stat.st_atime));
+    }
+#endif
+
+    return std::optional<datetime>();
+  }
+
+  std::optional<datetime>
+  path::last_modified() const
+  {
+#if defined(_WIN32)
+    WIN32_FILE_ATTRIBUTE_DATA data = {0};
+
+    if (::GetFileAttributesExW(widen(m_full_path).c_str(),
+                               GetFileExInfoStandard,
+                               &data))
+    {
+      SYSTEMTIME st;
+
+      ::FileTimeToSystemTime(&data.ftLastWriteTime, &st);
+
+      return std::make_optional<datetime>(
+        st.wYear,
+        static_cast<month>(st.wMonth - 1),
+        st.wDay,
+        st.wHour,
+        st.wMinute,
+        st.wSecond
+      );
+    }
+#else
+    if (stat())
+    {
+      return std::optional<datetime>(datetime::timestamp(m_stat.st_mtime));
+    }
+#endif
+
+    return std::optional<datetime>();
+  }
+
   bool
   path::equals(const path& that) const
   {
