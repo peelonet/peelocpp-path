@@ -40,6 +40,7 @@ namespace peelo
 #endif
 
 #if defined(_WIN32)
+  static int compare_ignore_case(const std::u32string&, const std::u32string&);
   static std::wstring widen(const std::u32string&);
 #endif
   static void parse(
@@ -210,7 +211,7 @@ namespace peelo
     }
 
 #if defined(_WIN32)
-# error "TODO: Implement case ignorant string comparison."
+    return !compare_ignore_case(m_full_path, that.m_full_path);
 #else
     return !m_full_path.compare(that.m_full_path);
 #endif
@@ -225,7 +226,7 @@ namespace peelo
     }
 
 #if defined(_WIN32)
-# error "TODO: Case ignorant path comparison."
+    return compare_ignore_case(m_full_path, that.m_full_path);
 #else
     return m_full_path.compare(that.m_full_path);
 #endif
@@ -257,6 +258,31 @@ namespace peelo
 #endif
 
 #if defined(_WIN32)
+  static int
+  compare_ignore_case(const std::u32string& a, const std::u32string& b)
+  {
+    const auto length_a = a.length();
+    const auto length_b = b.length();
+    const auto n = std::min(length_a, length_b);
+
+    for (std::u32string::size_type i = 0; i < n; ++i)
+    {
+      const auto c1 = unicode::tolower(a[i]);
+      const auto c2 = unicode::tolower(b[i]);
+
+      if (c1 != c2)
+      {
+        return c1 > c2 ? 1 : -1;
+      }
+    }
+    if (length_a == length_b)
+    {
+      return 0;
+    }
+
+    return length_a > length_b ? 1 : -1;
+  }
+
   static std::wstring
   widen(const std::u32string& input)
   {
