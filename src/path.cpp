@@ -209,6 +209,36 @@ namespace peelo
     return false;
   }
 
+  std::optional<std::size_t>
+  path::size() const
+  {
+    if (!empty())
+    {
+#if defined(_WIN32)
+      WIN32_FILE_ATTRIBUTE_DATA data = {0};
+
+      if (::GetFileAttributesExW(widen(m_full_path).c_str(),
+                                 GetFileExInfoStandard,
+                                 &data))
+      {
+        const auto size = (
+          (static_cast<ULONGLONG>(data.nFileSizeHigh) <<
+           sizeof(data.nFileSizeLow) * 8) | data.nFileSizeLow
+        );
+
+        return std::optional<std::size_t>(static_cast<std::size_t>(size));
+      }
+#else
+      if (stat())
+      {
+        return std::optional<std::size_t>(m_stat.st_size);
+      }
+#endif
+    }
+
+    return std::optional<std::size_t>();
+  }
+
   std::optional<datetime>
   path::last_access() const
   {

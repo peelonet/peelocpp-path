@@ -162,6 +162,12 @@ namespace peelo
     bool is_block_device() const;
 
     /**
+     * Returns the size of the file to which the path is pointing to in bytes,
+     * or nothing if the file does not exist.
+     */
+    std::optional<std::size_t> size() const;
+
+    /**
      * Returns the date and time when the file was last accessed, or nothing if
      * the file does not exist or such information isn't available.
      */
